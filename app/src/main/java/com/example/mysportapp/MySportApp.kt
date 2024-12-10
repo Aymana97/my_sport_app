@@ -1,10 +1,11 @@
-package com.example.mysportapp.compose
+package com.example.mysportapp
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.mysportapp.compose.Screen
 import com.example.mysportapp.compose.footballplayerdetails.PlayerDetailsScreen
 import com.example.mysportapp.compose.footballplayerslist.PlayersListScreen
 import com.example.mysportapp.compose.footballteamselection.FootballTeamSelectionScreen
@@ -35,7 +36,7 @@ fun MySportNavHost(
                 onBackClick = {
                     navController.navigateUp()
                 },
-                onButtonclick = { teamId, season ->
+                onButtonClick = { teamId, season ->
                     navController.navigate(
                         Screen.FootballPlayersList.createRoute(
                             teamId = teamId,
@@ -49,10 +50,10 @@ fun MySportNavHost(
         composable(
             route = Screen.FootballPlayersList.route,
             arguments = Screen.FootballPlayersList.navArguments,
-        ) {
+        ) { navBackStackEntry ->
             PlayersListScreen(
-                teamId = it.arguments?.getInt("teamId") ?: 0,
-                season = it.arguments?.getInt("season") ?: 0,
+                teamId = navBackStackEntry.arguments?.getInt("teamId") ?: 0,
+                season = navBackStackEntry.arguments?.getInt("season") ?: 0,
                 onBackClick = {
                     navController.navigateUp()
                 },

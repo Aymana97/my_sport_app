@@ -1,6 +1,8 @@
 package com.example.mysportapp.compose.footballteamselection
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -15,7 +17,7 @@ import com.example.mysportapp.viewmodels.FootballTeamSelectionViewModel
 @Composable
 fun FootballTeamSelectionScreen(
     onBackClick: () -> Unit,
-    onButtonclick: (teamId: Int, season: Int) -> Unit,
+    onButtonClick: (teamId: Int, season: Int) -> Unit,
     viewModel: FootballTeamSelectionViewModel = viewModel()
 ) {
     val leagues: List<FootballLeague> = viewModel.leagues
@@ -95,7 +97,7 @@ fun FootballTeamSelectionScreen(
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Button(
-                                onClick = { onButtonclick(team!!.team.id, season!!.year) },
+                                onClick = { onButtonClick(team!!.team.id, season!!.year) },
                                 contentPadding = PaddingValues(10.dp),
                             ) {
                                 Text(text = "Show team players")
@@ -127,11 +129,12 @@ fun<T> DropDownButton(
     }
 
     if (visible) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Button(
                 onClick = { isExpanded = !isExpanded },
@@ -139,20 +142,27 @@ fun<T> DropDownButton(
             ) {
                 Text(buttonToString(observedValue))
             }
-            DropdownMenu(
-                expanded = isExpanded,
-                onDismissRequest = { isExpanded = false },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                elements.forEach() { e ->
-                    DropdownMenuItem(
-                        onClick = {
-                            observedValue = e
-                            isExpanded = false
-                            onclick(e)
-                        }
+            if (isExpanded) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .padding(top = 8.dp)
+                ) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(text = elementToString(e))
+                        items(elements) { e ->
+                            DropdownMenuItem(
+                                onClick = {
+                                    observedValue = e
+                                    isExpanded = false
+                                    onclick(e)
+                                }
+                            ) {
+                                Text(text = elementToString(e))
+                            }
+                        }
                     }
                 }
             }

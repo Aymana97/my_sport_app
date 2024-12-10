@@ -8,7 +8,6 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.mysportapp.compose.MySportApp
 import com.example.mysportapp.ui.theme.MySportAppTheme
 
 class MainActivity : ComponentActivity() {
