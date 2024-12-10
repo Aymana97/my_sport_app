@@ -70,23 +70,35 @@ fun FootballTeamSelectionScreen(
                         buttonToString = { league -> league?.league?.name ?: "Select a league" },
                         elementToString = { league -> "${league.league.id} - ${league.league.name}" },
                         elements = leagues,
-                        onclick = { l -> league = l; seasons = l.seasons; }
+                        onclick = {
+                                l -> league = l
+                                seasons = l.seasons
+                                season = null
+                                team = null
+                        },
+                        selectedValue = league
                     )
 
                     DropDownButton(
-                        visible = league != null,
+                        enabled = league != null,
                         buttonToString = { season -> season?.year?.toString() ?: "Select a season" },
                         elementToString = { season -> season.year.toString() },
                         elements = seasons,
-                        onclick = { s -> season = s; viewModel.getTeams(league!!.league.id, s.year) }
+                        onclick = {
+                                s -> season = s
+                                viewModel.getTeams(league!!.league.id, s.year)
+                                team = null
+                        },
+                        selectedValue = season
                     )
 
                     DropDownButton(
-                        visible = league != null && season != null,
+                        enabled = league != null && season != null,
                         buttonToString = { team -> team?.team?.name ?: "Select a team" },
                         elementToString = { team -> "${team.team.code} - ${team.team.name}" },
                         elements = teams,
-                        onclick = { t -> team = t }
+                        onclick = { t -> team = t },
+                        selectedValue = team
                     )
 
                     if (team != null && season != null) {
@@ -114,54 +126,49 @@ fun FootballTeamSelectionScreen(
 
 @Composable
 fun<T> DropDownButton(
-    visible: Boolean = true,
+    enabled: Boolean = true,
     buttonToString: (T?) -> String,
     elementToString: (T) -> String,
     elements: List<T>,
+    selectedValue: T?,
     onclick: (T) -> Unit
 ) {
     var isExpanded: Boolean by remember {
         mutableStateOf(false)
     }
 
-    var observedValue: T? by remember {
-        mutableStateOf<T?>(null)
-    }
-
-    if (visible) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(
+            enabled = enabled,
+            onClick = { isExpanded = !isExpanded },
+            contentPadding = PaddingValues(10.dp),
         ) {
-            Button(
-                onClick = { isExpanded = !isExpanded },
-                contentPadding = PaddingValues(10.dp),
+            Text(buttonToString(selectedValue))
+        }
+        if (isExpanded) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .padding(top = 8.dp)
             ) {
-                Text(buttonToString(observedValue))
-            }
-            if (isExpanded) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight()
-                        .padding(top = 8.dp)
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        items(elements) { e ->
-                            DropdownMenuItem(
-                                onClick = {
-                                    observedValue = e
-                                    isExpanded = false
-                                    onclick(e)
-                                }
-                            ) {
-                                Text(text = elementToString(e))
+                    items(elements) { e ->
+                        DropdownMenuItem(
+                            onClick = {
+                                isExpanded = false
+                                onclick(e)
                             }
+                        ) {
+                            Text(text = elementToString(e))
                         }
                     }
                 }
